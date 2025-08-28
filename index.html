@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Cardápio Padaria & Confeitaria</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+    h1 { color: #333; }
+    .card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff; }
+    button { background: #28a745; color: #fff; border: none; padding: 10px 15px; margin-top: 10px; cursor: pointer; border-radius: 5px; }
+    button:hover { background: #218838; }
+  </style>
+</head>
+<body>
+  <h1>🍞 Cardápio Digital</h1>
+  <p>Escolha suas opções e envie seu pedido pelo WhatsApp.</p>
+
+  <div class="card">
+    <h2>🍰 Bolos</h2>
+    <label>Peso:</label>
+    <select id="peso">
+      <option>1kg</option>
+      <option>2kg</option>
+      <option>3kg</option>
+      <option>5kg</option>
+    </select>
+    <br>
+    <label>Recheio:</label>
+    <select id="recheio">
+      <option>Chocolate</option>
+      <option>Morango</option>
+      <option>Ninho</option>
+      <option>Doce de Leite</option>
+    </select>
+    <br>
+    <button onclick="adicionarPedido()">Adicionar ao Carrinho</button>
+  </div>
+
+  <div class="card">
+    <h2>🛒 Carrinho</h2>
+    <ul id="carrinho"></ul>
+    <button onclick="enviarWhatsApp()">Enviar pelo WhatsApp</button>
+  </div>
+
+  <script>
+    let carrinho = [];
+
+    function adicionarPedido() {
+      const peso = document.getElementById('peso').value;
+      const recheio = document.getElementById('recheio').value;
+      const pedido = `Bolo de ${recheio} - ${peso}`;
+      carrinho.push(pedido);
+      atualizarCarrinho();
+    }
+
+    function atualizarCarrinho() {
+      const lista = document.getElementById('carrinho');
+      lista.innerHTML = "";
+      carrinho.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        lista.appendChild(li);
+      });
+    }
+
+    function enviarWhatsApp() {
+      if (carrinho.length === 0) {
+        alert("Seu carrinho está vazio.");
+        return;
+      }
+      const mensagem = encodeURIComponent("📦 Meu pedido:\n" + carrinho.join("\n"));
+      const numero = "5527997540041"; // seu número com DDI e DDD
+      window.open(`https://wa.me/${numero}?text=${mensagem}`, "_blank");
+    }
+  </script>
+</body>
+</html>
