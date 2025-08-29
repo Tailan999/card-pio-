@@ -2,55 +2,89 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cardápio Padaria & Confeitaria</title>
+  <title>Padaria D Longhi - Cardápio Digital</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
-    h1 { color: #333; }
-    .card { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; background: #fff; }
-    button { background: #28a745; color: #fff; border: none; padding: 10px 15px; margin-top: 10px; cursor: pointer; border-radius: 5px; }
-    button:hover { background: #218838; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: linear-gradient(120deg, #fbeee6 0%, #f9f9f9 100%); }
+  header { background: #d2691e; color: #fff; padding: 30px 0 20px 0; text-align: center; box-shadow: 0 2px 8px #d2691e33; }
+  h1 { font-size: 2.5em; margin: 0; letter-spacing: 2px; }
+  .subtitle { font-size: 1.2em; color: #fffbe6; margin-top: 10px; }
+  .container { max-width: 500px; margin: 30px auto; padding: 0 20px; }
+  .card { border: 1px solid #e0c3a0; padding: 20px; margin: 20px 0; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px #e0c3a033; }
+  label { font-weight: bold; margin-top: 10px; display: block; }
+  select, .recheio-checkbox { margin: 5px 0 15px 0; padding: 6px; border-radius: 5px; border: 1px solid #d2691e44; }
+  .recheio-checkbox { margin-right: 10px; }
+  button { background: #d2691e; color: #fff; border: none; padding: 12px 20px; margin-top: 10px; cursor: pointer; border-radius: 7px; font-size: 1em; transition: background 0.2s; }
+  button:hover { background: #a0522d; }
+  ul { padding-left: 20px; }
   </style>
 </head>
 <body>
-  <h1>🍞 Cardápio Digital</h1>
-  <p>Escolha suas opções e envie seu pedido pelo WhatsApp.</p>
+  <header>
+    <h1>Padaria D Longhi</h1>
+    <div class="subtitle">🍞 Cardápio Digital</div>
+    <div style="margin-top:15px;">
+      <a href="https://www.instagram.com/padariadlonghi/" target="_blank" style="color:#fffbe6; text-decoration:underline; font-size:1.1em;">Siga nosso Instagram</a>
+    </div>
+  </header>
+  <div class="container">
+    <p>Escolha suas opções e envie seu pedido pelo WhatsApp.</p>
 
-  <div class="card">
-    <h2>🍰 Bolos</h2>
-    <label>Peso:</label>
-    <select id="peso">
-      <option>1kg</option>
-      <option>2kg</option>
-      <option>3kg</option>
-      <option>5kg</option>
-    </select>
-    <br>
-    <label>Recheio:</label>
-    <select id="recheio">
-      <option>Chocolate</option>
-      <option>Morango</option>
-      <option>Ninho</option>
-      <option>Doce de Leite</option>
-    </select>
-    <br>
-    <button onclick="adicionarPedido()">Adicionar ao Carrinho</button>
-  </div>
+    <div class="card">
+      <h2>🍰 Bolos</h2>
+      <label for="peso">Peso:</label>
+      <select id="peso">
+        <option>1kg</option>
+        <option>2kg</option>
+        <option>3kg</option>
+        <option>5kg</option>
+      </select>
+      <label>Recheios (escolha até 2):</label>
+      <div id="recheios">
+        <input type="checkbox" class="recheio-checkbox" value="Chocolate" id="chocolate">
+        <label for="chocolate">Chocolate</label>
+        <input type="checkbox" class="recheio-checkbox" value="Morango" id="morango">
+        <label for="morango">Morango</label>
+        <input type="checkbox" class="recheio-checkbox" value="Ninho" id="ninho">
+        <label for="ninho">Ninho</label>
+        <input type="checkbox" class="recheio-checkbox" value="Doce de Leite" id="doce">
+        <label for="doce">Doce de Leite</label>
+      </div>
+      <button onclick="adicionarPedido()">Adicionar ao Carrinho</button>
+    </div>
 
-  <div class="card">
-    <h2>🛒 Carrinho</h2>
-    <ul id="carrinho"></ul>
-    <button onclick="enviarWhatsApp()">Enviar pelo WhatsApp</button>
+    <div class="card">
+      <h2>🛒 Carrinho</h2>
+      <ul id="carrinho"></ul>
+      <button onclick="enviarWhatsApp()">Enviar pelo WhatsApp</button>
+    </div>
   </div>
 
   <script>
     let carrinho = [];
 
+    // Permitir no máximo 2 recheios
+    document.querySelectorAll('.recheio-checkbox').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const selecionados = document.querySelectorAll('.recheio-checkbox:checked');
+        if (selecionados.length > 2) {
+          this.checked = false;
+          alert('Você pode escolher até 2 recheios.');
+        }
+      });
+    });
+
     function adicionarPedido() {
       const peso = document.getElementById('peso').value;
-      const recheio = document.getElementById('recheio').value;
-      const pedido = `Bolo de ${recheio} - ${peso}`;
+      const recheiosSelecionados = Array.from(document.querySelectorAll('.recheio-checkbox:checked')).map(cb => cb.value);
+      if (recheiosSelecionados.length === 0) {
+        alert('Selecione pelo menos 1 recheio.');
+        return;
+      }
+      const pedido = `Bolo de ${recheiosSelecionados.join(' e ')} - ${peso}`;
       carrinho.push(pedido);
       atualizarCarrinho();
+      // Limpar seleção de recheios
+      document.querySelectorAll('.recheio-checkbox').forEach(cb => cb.checked = false);
     }
 
     function atualizarCarrinho() {
