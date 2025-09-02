@@ -68,6 +68,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
   <script>
     // Animações extras
     const style = document.createElement('style');
@@ -91,149 +92,48 @@
       renderer.setSize(container.offsetWidth, container.offsetHeight);
       container.appendChild(renderer.domElement);
 
-      // Chão com textura
+      // Iluminação avançada
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffe4b5, 1.5);
+      directionalLight.position.set(5, 10, 7);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+
+      // Chão realista
       const floorGeometry = new THREE.PlaneGeometry(12, 8);
       const floorTexture = new THREE.TextureLoader().load('https://cdn.pixabay.com/photo/2016/03/27/21/16/wood-1283802_1280.jpg');
       floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
       floorTexture.repeat.set(4, 2);
-      const floorMaterial = new THREE.MeshPhongMaterial({map: floorTexture});
+      const floorMaterial = new THREE.MeshStandardMaterial({map: floorTexture, roughness:0.7, metalness:0.1});
       const floor = new THREE.Mesh(floorGeometry, floorMaterial);
       floor.rotation.x = -Math.PI/2;
       floor.position.y = -1.5;
       scene.add(floor);
 
-      // Estrutura da padaria (prédio) com textura
-      const bakeryGeometry = new THREE.BoxGeometry(7, 3, 4);
-      const bakeryTexture = new THREE.TextureLoader().load('https://cdn.pixabay.com/photo/2017/01/06/19/15/brick-1958768_1280.jpg');
-      const bakeryMaterial = new THREE.MeshPhongMaterial({map: bakeryTexture});
-      const bakery = new THREE.Mesh(bakeryGeometry, bakeryMaterial);
-      bakery.position.set(0, 0, 0);
-      scene.add(bakery);
+      // Importar modelo 3D de padaria (exemplo gratuito)
+      const gltfLoader = new THREE.GLTFLoader();
+      gltfLoader.load('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Cafe/glTF/Cafe.gltf', function(gltf) {
+        const padaria = gltf.scene;
+        padaria.scale.set(2,2,2);
+        padaria.position.set(0,-1.5,0);
+        scene.add(padaria);
+      }, undefined, function(error){console.log('Erro ao carregar modelo 3D:', error);});
 
-      // Porta
-      const doorGeometry = new THREE.BoxGeometry(1, 1.5, 0.2);
-      const doorMaterial = new THREE.MeshPhongMaterial({color:0x8b5a2b});
-      const door = new THREE.Mesh(doorGeometry, doorMaterial);
-      door.position.set(0, -0.75, 2.1);
-      scene.add(door);
-
-      // Janela
-      const windowGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.2);
-      const windowMaterial = new THREE.MeshPhongMaterial({color:0xadd8e6, transparent:true, opacity:0.7});
-      const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
-      window1.position.set(-2, 0.3, 2.1);
-      scene.add(window1);
-      const window2 = window1.clone();
-      window2.position.set(2, 0.3, 2.1);
-      scene.add(window2);
-
-      // Balcão
-      const counterGeometry = new THREE.BoxGeometry(3, 0.7, 1);
-      const counterMaterial = new THREE.MeshPhongMaterial({color:0xf5deb3});
-      const counter = new THREE.Mesh(counterGeometry, counterMaterial);
-      counter.position.set(0, -1, 1.5);
-      scene.add(counter);
-
-      // Mesa
-      const tableGeometry = new THREE.CylinderGeometry(0.7, 0.7, 0.1, 32);
-      const tableMaterial = new THREE.MeshPhongMaterial({color:0xd2b48c});
-      const table = new THREE.Mesh(tableGeometry, tableMaterial);
-      table.position.set(-2.5, -1.2, 2.5);
-      scene.add(table);
-
-      // Vitrine
-      const showcaseGeometry = new THREE.BoxGeometry(1.5, 0.7, 0.7);
-      const showcaseMaterial = new THREE.MeshPhongMaterial({color:0xffe4b5, transparent:true, opacity:0.8});
-      const showcase = new THREE.Mesh(showcaseGeometry, showcaseMaterial);
-      showcase.position.set(2.5, -1, 1.5);
-      scene.add(showcase);
-
-      // Pães e bolos (esferas e cilindros)
-      function criarPao(x, z) {
-        const pao = new THREE.Mesh(new THREE.SphereGeometry(0.18, 32, 32), new THREE.MeshPhongMaterial({color:0xf4e2d8}));
-        pao.position.set(x, -0.95, z);
-        scene.add(pao);
-      }
-      function criarBolo(x, z) {
-        const bolo = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.15, 32), new THREE.MeshPhongMaterial({color:0xffc0cb}));
-        bolo.position.set(x, -0.92, z);
-        scene.add(bolo);
-      }
-      // Doces na vitrine
-      function criarDoce(x, z, cor) {
-        const doce = new THREE.Mesh(new THREE.SphereGeometry(0.11, 32, 32), new THREE.MeshPhongMaterial({color:cor}));
-        doce.position.set(x, -0.8, z);
-        scene.add(doce);
-      }
-      criarPao(2.2, 1.7); criarPao(2.7, 1.7); criarBolo(2.5, 1.2);
-      criarDoce(2.2, 1.3, 0xffe4b5); criarDoce(2.7, 1.3, 0xff6347); criarDoce(2.5, 1.6, 0x8b4513);
-
-      // Plantas decorativas
-      function criarPlanta(x, z) {
-        const vaso = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 0.18, 16), new THREE.MeshPhongMaterial({color:0x8b5a2b}));
-        vaso.position.set(x, -1.02, z);
-        scene.add(vaso);
-        const folha = new THREE.Mesh(new THREE.SphereGeometry(0.13, 16, 16), new THREE.MeshPhongMaterial({color:0x228b22}));
-        folha.position.set(x, -0.85, z);
-        scene.add(folha);
-      }
-      criarPlanta(-3, 2.8); criarPlanta(3, 2.8);
-
-      // Luminárias
-      function criarLuminaria(x, z) {
-        const haste = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 8), new THREE.MeshPhongMaterial({color:0xcccccc}));
-        haste.position.set(x, 1.1, z);
-        scene.add(haste);
-        const lampada = new THREE.Mesh(new THREE.SphereGeometry(0.09, 16, 16), new THREE.MeshPhongMaterial({color:0xffffe0, emissive:0xffffe0, emissiveIntensity:0.7}));
-        lampada.position.set(x, 1.35, z);
-        scene.add(lampada);
-      }
-      criarLuminaria(-2, 0); criarLuminaria(2, 0);
-
-      // Detalhes na mesa
-      criarBolo(-2.5, 2.5); criarDoce(-2.3, 2.7, 0xff6347);
-
-      // Mais pessoas
-      criarPessoa(-2.7, 2.2, 0x4682b4); // cliente mesa
-      criarPessoa(2.7, 2.2, 0x32cd32); // cliente vitrine
-
-      // Pessoas estilizadas
-      function criarPessoa(x, z, cor) {
-        // Corpo
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.5, 32), new THREE.MeshPhongMaterial({color:cor}));
-        body.position.set(x, -0.95, z);
-        scene.add(body);
-        // Cabeça
-        const head = new THREE.Mesh(new THREE.SphereGeometry(0.13, 32, 32), new THREE.MeshPhongMaterial({color:0xffe4b5}));
-        head.position.set(x, -0.65, z);
-        scene.add(head);
-        // Braços
-        const armGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.3, 32);
-        const armMaterial = new THREE.MeshPhongMaterial({color:cor});
-        const arm1 = new THREE.Mesh(armGeometry, armMaterial);
-        arm1.position.set(x-0.15, -0.8, z);
-        arm1.rotation.z = Math.PI/4;
-        scene.add(arm1);
-        const arm2 = new THREE.Mesh(armGeometry, armMaterial);
-        arm2.position.set(x+0.15, -0.8, z);
-        arm2.rotation.z = -Math.PI/4;
-        scene.add(arm2);
-      }
-      criarPessoa(-2.5, 2.5, 0x8b4513); // cliente mesa
-      criarPessoa(0, 1.5, 0xd2691e); // atendente balcão
-      criarPessoa(2.5, 2.5, 0xdeb887); // cliente vitrine
-
-      // Iluminação ambiente e sombra
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-      scene.add(ambientLight);
-      const directionalLight = new THREE.DirectionalLight(0xffe4b5, 1.2);
-      directionalLight.position.set(5, 10, 7);
-      directionalLight.castShadow = true;
-      scene.add(directionalLight);
+      // Importar pessoas (exemplo gratuito)
+      gltfLoader.load('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/AnimatedCube/glTF/AnimatedCube.gltf', function(gltf) {
+        const pessoa1 = gltf.scene.clone();
+        pessoa1.position.set(-2, -1.2, 2.5);
+        pessoa1.scale.set(0.5,0.5,0.5);
+        scene.add(pessoa1);
+        const pessoa2 = gltf.scene.clone();
+        pessoa2.position.set(2, -1.2, 2.5);
+        pessoa2.scale.set(0.5,0.5,0.5);
+        scene.add(pessoa2);
+      }, undefined, function(error){console.log('Erro ao carregar pessoa:', error);});
 
       // Animação
       function animate() {
-        bakery.rotation.y += 0.002;
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
