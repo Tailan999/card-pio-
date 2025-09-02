@@ -26,9 +26,16 @@
       <a href="https://www.instagram.com/padariadlonghi/" target="_blank" style="color:#fffbe6; text-decoration:underline; font-size:1.1em;">Siga nosso Instagram</a>
     </div>
   </header>
-  <div class="container">
+  <div id="frontpage" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:70vh;">
+    <div style="text-align:center;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Padaria" style="width:120px; margin-bottom:20px; animation:float 2s infinite alternate;">
+      <h2 style="color:#d2691e; font-size:2em; margin-bottom:10px;">Bem-vindo à Padaria D Longhi!</h2>
+      <p style="font-size:1.2em; color:#a0522d; margin-bottom:30px;">O melhor pão, bolo e carinho para você.<br>Faça seu pedido de forma rápida e fácil!</p>
+      <button id="btnIniciar" style="background:#d2691e; color:#fff; border:none; padding:15px 40px; font-size:1.3em; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px #d2691e33; transition:background 0.2s;">Iniciar</button>
+    </div>
+  </div>
+  <div class="container" id="pedidoSection" style="display:none;">
     <p>Escolha suas opções e envie seu pedido pelo WhatsApp.</p>
-
     <div class="card">
       <h2>🍰 Bolos</h2>
       <label for="peso">Peso:</label>
@@ -51,7 +58,6 @@
       </div>
       <button onclick="adicionarPedido()">Adicionar ao Carrinho</button>
     </div>
-
     <div class="card">
       <h2>🛒 Carrinho</h2>
       <ul id="carrinho"></ul>
@@ -60,18 +66,31 @@
   </div>
 
   <script>
-    let carrinho = [];
+    // Animação do ícone
+    const style = document.createElement('style');
+    style.innerHTML = `@keyframes float { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }`;
+    document.head.appendChild(style);
 
-    // Permitir no máximo 2 recheios
-    document.querySelectorAll('.recheio-checkbox').forEach(cb => {
-      cb.addEventListener('change', function() {
-        const selecionados = document.querySelectorAll('.recheio-checkbox:checked');
-        if (selecionados.length > 2) {
-          this.checked = false;
-          alert('Você pode escolher até 2 recheios.');
-        }
+    // Lógica para mostrar/esconder frontpage e pedidos
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('btnIniciar').onclick = function() {
+        document.getElementById('frontpage').style.display = 'none';
+        document.getElementById('pedidoSection').style.display = 'block';
+      };
+
+      // Permitir no máximo 2 recheios
+      document.querySelectorAll('.recheio-checkbox').forEach(cb => {
+        cb.addEventListener('change', function() {
+          const selecionados = document.querySelectorAll('.recheio-checkbox:checked');
+          if (selecionados.length > 2) {
+            this.checked = false;
+            alert('Você pode escolher até 2 recheios.');
+          }
+        });
       });
     });
+
+    let carrinho = [];
 
     function adicionarPedido() {
       const peso = document.getElementById('peso').value;
