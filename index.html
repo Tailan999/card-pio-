@@ -26,12 +26,14 @@
       <a href="https://www.instagram.com/padariadlonghi/" target="_blank" style="color:#fffbe6; text-decoration:underline; font-size:1.1em;">Siga nosso Instagram</a>
     </div>
   </header>
-  <div id="frontpage" style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:70vh;">
-    <div style="text-align:center;">
-      <img src="https://cdn-icons-png.flaticon.com/512/3075/3075977.png" alt="Padaria" style="width:120px; margin-bottom:20px; animation:float 2s infinite alternate;">
-      <h2 style="color:#d2691e; font-size:2em; margin-bottom:10px;">Bem-vindo à Padaria D Longhi!</h2>
-      <p style="font-size:1.2em; color:#a0522d; margin-bottom:30px;">O melhor pão, bolo e carinho para você.<br>Faça seu pedido de forma rápida e fácil!</p>
-      <button id="btnIniciar" style="background:#d2691e; color:#fff; border:none; padding:15px 40px; font-size:1.3em; border-radius:10px; cursor:pointer; box-shadow:0 2px 8px #d2691e33; transition:background 0.2s;">Iniciar</button>
+  <div id="frontpage" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; background: linear-gradient(120deg, #fffbe6 0%, #fbeee6 100%); position:relative; overflow:hidden;">
+    <div style="width:100vw; max-width:700px; height:400px; margin:auto; position:relative; z-index:2;">
+      <div id="padaria3d" style="width:100%; height:100%; background:transparent;"></div>
+    </div>
+    <div style="text-align:center; position:relative; z-index:3; margin-top:10px;">
+      <h2 style="color:#d2691e; font-size:2.5em; margin-bottom:10px; font-family:'Pacifico',cursive; letter-spacing:2px;">Bem-vindo à Padaria D Longhi!</h2>
+      <p style="font-size:1.3em; color:#a0522d; margin-bottom:30px;">O melhor pão, bolo e carinho para você.<br>Faça seu pedido de forma rápida e fácil!</p>
+      <button id="btnIniciar" style="background:#d2691e; color:#fff; border:none; padding:18px 50px; font-size:1.5em; border-radius:15px; cursor:pointer; box-shadow:0 2px 12px #d2691e33; transition:background 0.2s; font-family:'Segoe UI',Arial,sans-serif;">Iniciar</button>
     </div>
   </div>
   <div class="container" id="pedidoSection" style="display:none;">
@@ -65,14 +67,108 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
   <script>
-    // Animação do ícone
+    // Animações extras
     const style = document.createElement('style');
-    style.innerHTML = `@keyframes float { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }`;
+    style.innerHTML = `
+      @keyframes float { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-30px); } }
+      @keyframes shake { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
+    `;
     document.head.appendChild(style);
+
+    // Padaria 3D
+    function criarPadaria3D() {
+      const container = document.getElementById('padaria3d');
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xfffbe6);
+      const camera = new THREE.PerspectiveCamera(60, container.offsetWidth/container.offsetHeight, 0.1, 1000);
+      camera.position.set(0, 2, 8);
+
+      const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      container.appendChild(renderer.domElement);
+
+      // Chão
+      const floorGeometry = new THREE.PlaneGeometry(12, 8);
+      const floorMaterial = new THREE.MeshPhongMaterial({color:0xfbeee6});
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = -Math.PI/2;
+      floor.position.y = -1.5;
+      scene.add(floor);
+
+      // Estrutura da padaria (prédio)
+      const bakeryGeometry = new THREE.BoxGeometry(7, 3, 4);
+      const bakeryMaterial = new THREE.MeshPhongMaterial({color:0xd2691e});
+      const bakery = new THREE.Mesh(bakeryGeometry, bakeryMaterial);
+      bakery.position.set(0, 0, 0);
+      scene.add(bakery);
+
+      // Porta
+      const doorGeometry = new THREE.BoxGeometry(1, 1.5, 0.2);
+      const doorMaterial = new THREE.MeshPhongMaterial({color:0x8b5a2b});
+      const door = new THREE.Mesh(doorGeometry, doorMaterial);
+      door.position.set(0, -0.75, 2.1);
+      scene.add(door);
+
+      // Janela
+      const windowGeometry = new THREE.BoxGeometry(1.2, 0.8, 0.2);
+      const windowMaterial = new THREE.MeshPhongMaterial({color:0xadd8e6, transparent:true, opacity:0.7});
+      const window1 = new THREE.Mesh(windowGeometry, windowMaterial);
+      window1.position.set(-2, 0.3, 2.1);
+      scene.add(window1);
+      const window2 = window1.clone();
+      window2.position.set(2, 0.3, 2.1);
+      scene.add(window2);
+
+      // Letreiro
+      const loader = new THREE.FontLoader();
+      loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+        const textGeometry = new THREE.TextGeometry('Padaria D Longhi', {
+          font: font,
+          size: 0.5,
+          height: 0.1,
+        });
+        const textMaterial = new THREE.MeshPhongMaterial({color:0xffe4b5});
+        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+        textMesh.position.set(-2.5, 1.2, 2.15);
+        scene.add(textMesh);
+      });
+
+      // Pessoas (esferas coloridas)
+      function criarPessoa(x, z, cor) {
+        const body = new THREE.Mesh(new THREE.SphereGeometry(0.3, 32, 32), new THREE.MeshPhongMaterial({color:cor}));
+        body.position.set(x, -1.2, z);
+        scene.add(body);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.18, 32, 32), new THREE.MeshPhongMaterial({color:0xffe4b5}));
+        head.position.set(x, -0.85, z);
+        scene.add(head);
+      }
+      criarPessoa(-1.2, 2.5, 0x8b4513); // cliente
+      criarPessoa(1.2, 2.5, 0xdeb887); // cliente
+      criarPessoa(0, 1.2, 0xd2691e); // atendente
+
+      // Iluminação
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffe4b5, 1);
+      directionalLight.position.set(5, 10, 7);
+      scene.add(directionalLight);
+
+      // Animação
+      function animate() {
+        bakery.rotation.y += 0.002;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
 
     // Lógica para mostrar/esconder frontpage e pedidos
     document.addEventListener('DOMContentLoaded', function() {
+      criarPadaria3D();
       document.getElementById('btnIniciar').onclick = function() {
         document.getElementById('frontpage').style.display = 'none';
         document.getElementById('pedidoSection').style.display = 'block';
