@@ -123,19 +123,18 @@
       window2.position.set(2, 0.3, 2.1);
       scene.add(window2);
 
-      // Letreiro
-      const loader = new THREE.FontLoader();
-      loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font) {
-        const textGeometry = new THREE.TextGeometry('Padaria D Longhi', {
-          font: font,
-          size: 0.5,
-          height: 0.1,
-        });
-        const textMaterial = new THREE.MeshPhongMaterial({color:0xffe4b5});
-        const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        textMesh.position.set(-2.5, 1.2, 2.15);
-        scene.add(textMesh);
-      });
+  // Letreiro 2D (simples)
+  const letreiro = document.createElement('div');
+  letreiro.innerText = 'Padaria D Longhi';
+  letreiro.style.position = 'absolute';
+  letreiro.style.top = '30px';
+  letreiro.style.left = '50%';
+  letreiro.style.transform = 'translateX(-50%)';
+  letreiro.style.fontSize = '2em';
+  letreiro.style.color = '#d2691e';
+  letreiro.style.fontFamily = 'Pacifico, cursive';
+  letreiro.style.zIndex = '10';
+  container.appendChild(letreiro);
 
       // Pessoas (esferas coloridas)
       function criarPessoa(x, z, cor) {
