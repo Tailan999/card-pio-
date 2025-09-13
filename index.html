@@ -9,9 +9,19 @@
 <body class="min-h-screen bg-gray-100 p-6">
   <div class="max-w-6xl mx-auto">
     <header class="flex items-center justify-between mb-6">
-      <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Painel de Seguidores</h1>
-      <div class="flex gap-2" id="adminArea"></div>
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Painel Instagram</h1>
+      <div class="flex gap-2 items-center">
+        <a href="novo-pedido.html" target="_blank" class="px-3 py-1 rounded bg-green-500 text-white font-semibold hover:bg-green-600 transition">Novo Pedido (Tudo Grátis)</a>
+        <div id="adminArea"></div>
+      </div>
     </header>
+    <div class="mb-4">
+      <nav class="flex gap-2">
+        <button id="tabSeguidores" class="tab-btn px-4 py-2 rounded bg-purple-600 text-white">Seguidores</button>
+        <button id="tabViews" class="tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700">Views</button>
+        <button id="tabCurtidas" class="tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700">Curtidas</button>
+      </nav>
+    </div>
     <div id="msg" class="mb-4 text-sm text-gray-700"></div>
     <div id="adminPanel" class="bg-white shadow p-4 rounded mb-6 hidden">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
@@ -23,20 +33,48 @@
       </div>
       <button id="btnAdicionar" class="px-3 py-1 bg-purple-600 text-white rounded">Adicionar</button>
     </div>
-    <div class="bg-white shadow rounded p-4">
-      <input id="busca" placeholder="Pesquisar" class="border px-2 py-1 rounded mb-3 w-full">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="text-left text-gray-600 border-b">
-            <th class="py-2">Usuário</th>
-            <th>Nome</th>
-            <th>Segue de volta</th>
-            <th>Adicionado</th>
-            <th id="thAcoes"></th>
-          </tr>
-        </thead>
-        <tbody id="tabelaSeguidores"></tbody>
-      </table>
+    <div id="painelSeguidores">
+      <div class="bg-white shadow rounded p-4 mb-6">
+        <h2 class="text-lg font-bold mb-2">Adicionar Seguidores</h2>
+        <input id="seguidorUsuario" placeholder="@seuInstagram" class="border rounded px-2 py-1 mb-2 w-full">
+        <input id="seguidorQtd" type="number" min="1" placeholder="Quantidade de seguidores" class="border rounded px-2 py-1 mb-2 w-full">
+        <button id="btnAddSeguidor" class="px-3 py-1 bg-purple-600 text-white rounded">Adicionar Seguidores</button>
+        <div id="listaSeguidoresSimulados" class="mt-4 text-sm text-gray-700"></div>
+        <div class="text-xs text-gray-400 mt-2">Simulação: seguidores não são adicionados de verdade ao Instagram.</div>
+      </div>
+      <div class="bg-white shadow rounded p-4">
+        <input id="busca" placeholder="Pesquisar" class="border px-2 py-1 rounded mb-3 w-full">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="text-left text-gray-600 border-b">
+              <th class="py-2">Usuário</th>
+              <th>Nome</th>
+              <th>Segue de volta</th>
+              <th>Adicionado</th>
+              <th id="thAcoes"></th>
+            </tr>
+          </thead>
+          <tbody id="tabelaSeguidores"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="painelViews" style="display:none">
+      <div class="bg-white shadow rounded p-4">
+        <h2 class="text-lg font-bold mb-2">Adicionar Views</h2>
+        <input id="viewUsuario" placeholder="@usuario ou link do vídeo" class="border rounded px-2 py-1 mb-2 w-full">
+        <input id="viewQtd" type="number" min="1" placeholder="Quantidade de views" class="border rounded px-2 py-1 mb-2 w-full">
+        <button id="btnAddView" class="px-3 py-1 bg-blue-600 text-white rounded">Adicionar Views</button>
+        <div id="listaViews" class="mt-4 text-sm text-gray-700"></div>
+      </div>
+    </div>
+    <div id="painelCurtidas" style="display:none">
+      <div class="bg-white shadow rounded p-4">
+        <h2 class="text-lg font-bold mb-2">Adicionar Curtidas</h2>
+        <input id="curtidaUsuario" placeholder="@usuario ou link da publicação" class="border rounded px-2 py-1 mb-2 w-full">
+        <input id="curtidaQtd" type="number" min="1" placeholder="Quantidade de curtidas" class="border rounded px-2 py-1 mb-2 w-full">
+        <button id="btnAddCurtida" class="px-3 py-1 bg-pink-600 text-white rounded">Adicionar Curtidas</button>
+        <div id="listaCurtidas" class="mt-4 text-sm text-gray-700"></div>
+      </div>
     </div>
   </div>
   <script>
@@ -44,14 +82,115 @@
       let admin = false;
       let senhaSalva = localStorage.getItem('senha_admin') || 'admin';
       let seguidores = JSON.parse(localStorage.getItem('seguidores') || '[]');
-      let busca = '';
+      let views = JSON.parse(localStorage.getItem('views') || '[]');
+      let curtidas = JSON.parse(localStorage.getItem('curtidas') || '[]');
+  let busca = '';
+  let seguidoresSimulados = JSON.parse(localStorage.getItem('seguidoresSimulados') || '[]');
+      // Seguidores simulados
+      function renderSeguidoresSimulados() {
+        let html = '';
+        if (!seguidoresSimulados.length) html = '<div class="text-gray-400">Nenhuma simulação de seguidores</div>';
+        else html = '<ul>' + seguidoresSimulados.map(s => `<li>${s.usuario} - ${s.qtd} seguidores <button onclick="removerSeguidorSimulado(${s.id})" class="ml-2 text-red-500">remover</button></li>`).join('') + '</ul>';
+        document.getElementById('listaSeguidoresSimulados').innerHTML = html;
+      }
+      window.removerSeguidorSimulado = function(id) {
+        seguidoresSimulados = seguidoresSimulados.filter(s => s.id !== id);
+        salvar();
+        renderSeguidoresSimulados();
+      };
+      document.getElementById('btnAddSeguidor').onclick = function() {
+        const usuario = document.getElementById('seguidorUsuario').value.trim();
+        const qtd = parseInt(document.getElementById('seguidorQtd').value);
+        if (!usuario || !qtd) return showMsg('Preencha todos os campos de seguidores');
+        seguidoresSimulados.unshift({ usuario, qtd, id: Date.now() });
+        document.getElementById('seguidorUsuario').value = '';
+        document.getElementById('seguidorQtd').value = '';
+        showMsg('Simulação de seguidores adicionada!');
+        salvar();
+        renderSeguidoresSimulados();
+      };
       const adminArea = document.getElementById('adminArea');
       const adminPanel = document.getElementById('adminPanel');
       const tabelaSeguidores = document.getElementById('tabelaSeguidores');
       const msg = document.getElementById('msg');
       const thAcoes = document.getElementById('thAcoes');
+      const painelSeguidores = document.getElementById('painelSeguidores');
+      const painelViews = document.getElementById('painelViews');
+      const painelCurtidas = document.getElementById('painelCurtidas');
+      // Abas
+      document.getElementById('tabSeguidores').onclick = function() {
+        painelSeguidores.style.display = '';
+        painelViews.style.display = 'none';
+        painelCurtidas.style.display = 'none';
+        this.className = 'tab-btn px-4 py-2 rounded bg-purple-600 text-white';
+        document.getElementById('tabViews').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+        document.getElementById('tabCurtidas').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+      };
+      document.getElementById('tabViews').onclick = function() {
+        painelSeguidores.style.display = 'none';
+        painelViews.style.display = '';
+        painelCurtidas.style.display = 'none';
+        this.className = 'tab-btn px-4 py-2 rounded bg-blue-600 text-white';
+        document.getElementById('tabSeguidores').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+        document.getElementById('tabCurtidas').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+      };
+      document.getElementById('tabCurtidas').onclick = function() {
+        painelSeguidores.style.display = 'none';
+        painelViews.style.display = 'none';
+        painelCurtidas.style.display = '';
+        this.className = 'tab-btn px-4 py-2 rounded bg-pink-600 text-white';
+        document.getElementById('tabSeguidores').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+        document.getElementById('tabViews').className = 'tab-btn px-4 py-2 rounded bg-gray-200 text-gray-700';
+      };
 
       function renderAdminArea() {
+      // Views
+      function renderViews() {
+        let html = '';
+        if (!views.length) html = '<div class="text-gray-400">Nenhuma view adicionada</div>';
+        else html = '<ul>' + views.map(v => `<li>${v.usuario} - ${v.qtd} views <button onclick="removerView(${v.id})" class="ml-2 text-red-500">remover</button></li>`).join('') + '</ul>';
+        document.getElementById('listaViews').innerHTML = html;
+      }
+      window.removerView = function(id) {
+        views = views.filter(v => v.id !== id);
+        salvar();
+        renderViews();
+      };
+      document.getElementById('btnAddView').onclick = function() {
+        const usuario = document.getElementById('viewUsuario').value.trim();
+        const qtd = parseInt(document.getElementById('viewQtd').value);
+        if (!usuario || !qtd) return showMsg('Preencha todos os campos de views');
+        views.unshift({ usuario, qtd, id: Date.now() });
+        document.getElementById('viewUsuario').value = '';
+        document.getElementById('viewQtd').value = '';
+        showMsg('Views adicionadas!');
+        salvar();
+        renderViews();
+      };
+
+      // Curtidas
+      function renderCurtidas() {
+        let html = '';
+        if (!curtidas.length) html = '<div class="text-gray-400">Nenhuma curtida adicionada</div>';
+        else html = '<ul>' + curtidas.map(c => `<li>${c.usuario} - ${c.qtd} curtidas <button onclick="removerCurtida(${c.id})" class="ml-2 text-red-500">remover</button></li>`).join('') + '</ul>';
+        document.getElementById('listaCurtidas').innerHTML = html;
+      }
+      window.removerCurtida = function(id) {
+        curtidas = curtidas.filter(c => c.id !== id);
+        salvar();
+        renderCurtidas();
+      };
+      document.getElementById('btnAddCurtida').onclick = function() {
+        const usuario = document.getElementById('curtidaUsuario').value.trim();
+        const qtd = parseInt(document.getElementById('curtidaQtd').value);
+        if (!usuario || !qtd) return showMsg('Preencha todos os campos de curtidas');
+        curtidas.unshift({ usuario, qtd, id: Date.now() });
+        document.getElementById('curtidaUsuario').value = '';
+        document.getElementById('curtidaQtd').value = '';
+        showMsg('Curtidas adicionadas!');
+        salvar();
+        renderCurtidas();
+      };
         adminArea.innerHTML = '';
         if (admin) {
           const btnSair = document.createElement('button');
@@ -166,9 +305,15 @@
 
       function salvar() {
         localStorage.setItem('seguidores', JSON.stringify(seguidores));
+        localStorage.setItem('views', JSON.stringify(views));
+        localStorage.setItem('curtidas', JSON.stringify(curtidas));
+        localStorage.setItem('seguidoresSimulados', JSON.stringify(seguidoresSimulados));
       }
 
       renderAll();
+      renderViews();
+      renderCurtidas();
+      renderSeguidoresSimulados();
     });
   </script>
 </body>
