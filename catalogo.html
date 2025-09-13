@@ -193,56 +193,58 @@
 </div>
 
 <script>
-// Lista de nomes dos relógios (na ordem das imagens)
-const nomesRelogios = [
-  'Relógio 1','Relógio 2','Relógio 3','Relógio 4','Relógio 5','Relógio 6','Relógio 7','Relógio 8','Relógio 9','Relógio 10',
-  'Relógio 11','Relógio 12','Relógio 13','Relógio 14','Relógio 15','Relógio 16','Relógio 17','Relógio 18','Relógio 19','Relógio 20'
-];
+document.addEventListener('DOMContentLoaded', function() {
+  // Lista de nomes dos relógios (na ordem das imagens)
+  const nomesRelogios = [
+    'Relógio 1','Relógio 2','Relógio 3','Relógio 4','Relógio 5','Relógio 6','Relógio 7','Relógio 8','Relógio 9','Relógio 10',
+    'Relógio 11','Relógio 12','Relógio 13','Relógio 14','Relógio 15','Relógio 16','Relógio 17','Relógio 18','Relógio 19','Relógio 20'
+  ];
 
-let carrinho = [];
+  let carrinho = [];
 
-// Adiciona evento aos botões de adicionar ao carrinho
-document.querySelectorAll('.catalogo .item').forEach(function(item, idx) {
-  item.querySelector('.btn-carrinho').onclick = function() {
-    const nome = nomesRelogios[idx];
-    const img = item.querySelector('img').getAttribute('src');
-    carrinho.push({ nome, img });
+  // Adiciona evento aos botões de adicionar ao carrinho
+  document.querySelectorAll('.catalogo .item').forEach(function(item, idx) {
+    item.querySelector('.btn-carrinho').onclick = function() {
+      const nome = nomesRelogios[idx];
+      const img = item.querySelector('img').getAttribute('src');
+      carrinho.push({ nome, img });
+      mostrarCarrinho();
+    };
+  });
+
+  function mostrarCarrinho() {
+    const modal = document.getElementById('modalCarrinho');
+    const lista = document.getElementById('listaCarrinho');
+    lista.innerHTML = '';
+    if (carrinho.length === 0) {
+      lista.innerHTML = '<li style="color:#bdb7e6;text-align:center;">Carrinho vazio</li>';
+    } else {
+      carrinho.forEach(function(item, i) {
+        lista.innerHTML += `<li style='margin-bottom:8px;display:flex;align-items:center;gap:10px;'><img src='${item.img}' alt='' style='width:38px;height:38px;border-radius:6px;background:#22223a;'> <span>${item.nome}</span> <button onclick='removerCarrinho(${i})' style='margin-left:auto;background:none;border:none;color:#a259f7;font-size:1.2rem;cursor:pointer;' title='Remover'>&times;</button></li>`;
+      });
+    }
+    modal.style.display = 'flex';
+  }
+
+  window.removerCarrinho = function(idx) {
+    carrinho.splice(idx, 1);
     mostrarCarrinho();
   };
-});
 
-function mostrarCarrinho() {
-  const modal = document.getElementById('modalCarrinho');
-  const lista = document.getElementById('listaCarrinho');
-  lista.innerHTML = '';
-  if (carrinho.length === 0) {
-    lista.innerHTML = '<li style="color:#bdb7e6;text-align:center;">Carrinho vazio</li>';
-  } else {
+  document.getElementById('btnContinuar').onclick = function() {
+    document.getElementById('modalCarrinho').style.display = 'none';
+  };
+
+  document.getElementById('btnFinalizar').onclick = function() {
+    if (carrinho.length === 0) return alert('Seu carrinho está vazio!');
+    let texto = 'Olá! Gostaria de fazer um pedido:\n';
     carrinho.forEach(function(item, i) {
-      lista.innerHTML += `<li style='margin-bottom:8px;display:flex;align-items:center;gap:10px;'><img src='${item.img}' alt='' style='width:38px;height:38px;border-radius:6px;background:#22223a;'> <span>${item.nome}</span> <button onclick='removerCarrinho(${i})' style='margin-left:auto;background:none;border:none;color:#a259f7;font-size:1.2rem;cursor:pointer;' title='Remover'>&times;</button></li>`;
+      texto += `- ${item.nome}\n`;
     });
-  }
-  modal.style.display = 'flex';
-}
-
-window.removerCarrinho = function(idx) {
-  carrinho.splice(idx, 1);
-  mostrarCarrinho();
-};
-
-document.getElementById('btnContinuar').onclick = function() {
-  document.getElementById('modalCarrinho').style.display = 'none';
-};
-
-document.getElementById('btnFinalizar').onclick = function() {
-  if (carrinho.length === 0) return alert('Seu carrinho está vazio!');
-  let texto = 'Olá! Gostaria de fazer um pedido:\n';
-  carrinho.forEach(function(item, i) {
-    texto += `- ${item.nome}\n`;
-  });
-  const url = 'https://wa.me/5527997662164?text=' + encodeURIComponent(texto);
-  window.open(url, '_blank');
-};
+    const url = 'https://wa.me/5527997662164?text=' + encodeURIComponent(texto);
+    window.open(url, '_blank');
+  };
+});
 </script>
 </body>
 </html>
