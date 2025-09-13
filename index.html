@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel de Seguidores</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen bg-gray-100 p-6">
+  <div class="max-w-6xl mx-auto">
+    <header class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">Painel de Seguidores</h1>
+      <div class="flex gap-2" id="adminArea"></div>
+    </header>
+    <div id="msg" class="mb-4 text-sm text-gray-700"></div>
+    <div id="adminPanel" class="bg-white shadow p-4 rounded mb-6 hidden">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+        <input id="novoUsuario" placeholder="@usuario" class="border rounded px-2 py-1">
+        <input id="novoNome" placeholder="Nome" class="border rounded px-2 py-1">
+        <label class="flex items-center gap-2">
+          <input type="checkbox" id="novoSegue"> Segue de volta
+        </label>
+      </div>
+      <button id="btnAdicionar" class="px-3 py-1 bg-purple-600 text-white rounded">Adicionar</button>
+    </div>
+    <div class="bg-white shadow rounded p-4">
+      <input id="busca" placeholder="Pesquisar" class="border px-2 py-1 rounded mb-3 w-full">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-left text-gray-600 border-b">
+            <th class="py-2">Usuário</th>
+            <th>Nome</th>
+            <th>Segue de volta</th>
+            <th>Adicionado</th>
+            <th id="thAcoes"></th>
+          </tr>
+        </thead>
+        <tbody id="tabelaSeguidores"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      let admin = false;
+      let senhaSalva = localStorage.getItem('senha_admin') || 'admin';
+      let seguidores = JSON.parse(localStorage.getItem('seguidores') || '[]');
+      let busca = '';
+      const adminArea = document.getElementById('adminArea');
+      const adminPanel = document.getElementById('adminPanel');
+      const tabelaSeguidores = document.getElementById('tabelaSeguidores');
+      const msg = document.getElementById('msg');
+      const thAcoes = document.getElementById('thAcoes');
+
+      function renderAdminArea() {
+        adminArea.innerHTML = '';
+        if (admin) {
+          const btnSair = document.createElement('button');
+          btnSair.textContent = 'Sair';
+          btnSair.className = 'px-3 py-1 rounded bg-red-500 text-white';
+          btnSair.onclick = () => { admin = false; renderAll(); };
+          const btnSenha = document.createElement('button');
+          btnSenha.textContent = 'Trocar Senha';
+          btnSenha.className = 'px-3 py-1 rounded bg-blue-600 text-white';
+          btnSenha.onclick = () => {
+            const nova = prompt('Nova senha:');
+            if (nova) {
+              senhaSalva = nova;
+              localStorage.setItem('senha_admin', nova);
+              showMsg('Senha alterada');
+            }
+          };
+          adminArea.appendChild(btnSair);
+          adminArea.appendChild(btnSenha);
+        } else {
+          const form = document.createElement('form');
+          form.className = 'flex gap-2';
+          form.onsubmit = (e) => {
+            e.preventDefault();
+            const senha = form.querySelector('input').value;
+            if (senha === senhaSalva) {
+              admin = true;
+              showMsg('');
+              renderAll();
+            } else {
+              showMsg('Senha incorreta');
+            }
+          };
+          const input = document.createElement('input');
+          input.placeholder = 'Senha admin';
+          input.className = 'border rounded px-2';
+          input.type = 'password';
+          form.appendChild(input);
+          const btn = document.createElement('button');
+          btn.textContent = 'Entrar';
+          btn.className = 'px-3 py-1 rounded bg-green-600 text-white';
+          form.appendChild(btn);
+          adminArea.appendChild(form);
+        }
+      }
+
+      function showMsg(m) {
+        msg.textContent = m || '';
+      }
+
+      function renderAdminPanel() {
+        adminPanel.style.display = admin ? '' : 'none';
+        thAcoes.textContent = admin ? '' : '';
+      }
+
+      function renderTabela() {
+        let filtrados = seguidores.filter(s =>
+          s.usuario.toLowerCase().includes(busca.toLowerCase()) ||
+          s.nome.toLowerCase().includes(busca.toLowerCase())
+        );
+        tabelaSeguidores.innerHTML = '';
+        if (!filtrados.length) {
+          tabelaSeguidores.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">Nenhum encontrado</td></tr>`;
+          return;
+        }
+        filtrados.forEach(s => {
+          const tr = document.createElement('tr');
+          tr.className = 'border-b';
+          tr.innerHTML = `
+            <td class="py-2">${s.usuario}</td>
+            <td>${s.nome}</td>
+            <td>${s.segueDeVolta ? 'Sim' : 'Não'}</td>
+            <td>${new Date(s.criado).toLocaleString()}</td>
+            ${admin ? `<td class="text-right"><button class='px-2 py-1 bg-red-500 text-white rounded' onclick='removerSeguidor(${s.id})'>Remover</button></td>` : '<td></td>'}
+          `;
+          tabelaSeguidores.appendChild(tr);
+        });
+      }
+
+      function renderAll() {
+        renderAdminArea();
+        renderAdminPanel();
+        renderTabela();
+      }
+
+      window.removerSeguidor = function(id) {
+        if (!confirm('Remover?')) return;
+        seguidores = seguidores.filter(s => s.id !== id);
+        salvar();
+        renderAll();
+      };
+
+      document.getElementById('btnAdicionar').onclick = function() {
+        const usuario = document.getElementById('novoUsuario').value.trim();
+        const nome = document.getElementById('novoNome').value.trim();
+        const segue = document.getElementById('novoSegue').checked;
+        if (!usuario) return showMsg('Digite o usuário');
+        if (seguidores.find(s => s.usuario.toLowerCase() === usuario.toLowerCase())) return showMsg('Já existe');
+        seguidores.unshift({ usuario, nome, segueDeVolta: segue, id: Date.now(), criado: new Date().toISOString() });
+        document.getElementById('novoUsuario').value = '';
+        document.getElementById('novoNome').value = '';
+        document.getElementById('novoSegue').checked = false;
+        showMsg('Adicionado!');
+        salvar();
+        renderAll();
+      };
+
+      document.getElementById('busca').oninput = function(e) {
+        busca = e.target.value;
+        renderTabela();
+      };
+
+      function salvar() {
+        localStorage.setItem('seguidores', JSON.stringify(seguidores));
+      }
+
+      renderAll();
+    });
+  </script>
+</body>
+</html>
