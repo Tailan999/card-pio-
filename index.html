@@ -7,18 +7,72 @@
 	<title>hora x</title>
 		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;400&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
 	<style>
-			body {
-				background: linear-gradient(135deg, #181828 0%, #0a0a0f 100%);
-				min-height: 100vh;
-				margin: 0;
-				font-family: 'Poppins', 'Roboto Mono', Arial, sans-serif;
-				color: #e7e7f7;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				letter-spacing: 0.01em;
-			}
+				body {
+					min-height: 100vh;
+					margin: 0;
+					font-family: 'Poppins', 'Roboto Mono', Arial, sans-serif;
+					color: #e7e7f7;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+					justify-content: center;
+					letter-spacing: 0.01em;
+					position: relative;
+					overflow: hidden;
+				}
+				.bg-anim {
+					position: fixed;
+					top: 0; left: 0; width: 100vw; height: 100vh;
+					z-index: 0;
+					pointer-events: none;
+					overflow: hidden;
+				}
+				.blob {
+					position: absolute;
+					border-radius: 50%;
+					filter: blur(60px);
+					opacity: 0.55;
+					animation: moveblob 16s ease-in-out infinite alternate;
+				}
+				.blob1 {
+					width: 520px; height: 520px;
+					background: linear-gradient(120deg,#a259f7 0%,#6d28d9 100%);
+					left: -120px; top: -120px;
+					animation-delay: 0s;
+				}
+				.blob2 {
+					width: 400px; height: 400px;
+					background: linear-gradient(120deg,#c084fc 0%,#a259f7 100%);
+					right: -100px; top: 40vh;
+					animation-delay: 4s;
+				}
+				.blob3 {
+					width: 340px; height: 340px;
+					background: linear-gradient(120deg,#6d28d9 0%,#a259f7 100%);
+					left: 60vw; bottom: -120px;
+					animation-delay: 8s;
+				}
+				@keyframes moveblob {
+					0% { transform: scale(1) translateY(0) translateX(0); }
+					50% { transform: scale(1.15) translateY(-40px) translateX(40px); }
+					100% { transform: scale(1.05) translateY(40px) translateX(-40px); }
+				}
+				.glass {
+					position: relative;
+					z-index: 1;
+					background: rgba(24, 24, 40, 0.72);
+					border-radius: 32px;
+					box-shadow: 0 8px 48px #a259f733, 0 1.5px 0 #fff1;
+					padding: 48px 36px 36px 36px;
+					margin: 0 auto;
+					backdrop-filter: blur(12px) saturate(1.2);
+					-webkit-backdrop-filter: blur(12px) saturate(1.2);
+					max-width: 420px;
+					width: 100%;
+					display: flex;
+					flex-direction: column;
+					align-items: center;
+				}
 		.tigre {
 					width: 180px;
 					margin: 0 auto 32px auto;
@@ -107,14 +161,21 @@
 	</style>
 </head>
 <body>
-	<img class="tigre" src="https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_1280.png" alt="Tigre roxo estilizado" />
-	<h1>hora x</h1>
-	<div class="subtitle">Seu painel de tempo e estilo</div>
-	<div class="clock" id="clock">00:00:00</div>
-	<div class="btns">
-		<a href="catalogo.html" class="btn">Catálogo</a>
-		<a href="https://www.instagram.com/tailan.avg/" class="btn" target="_blank">Criador</a>
-	</div>
+		<div class="bg-anim">
+			<div class="blob blob1"></div>
+			<div class="blob blob2"></div>
+			<div class="blob blob3"></div>
+		</div>
+		<div class="glass">
+			<img class="tigre" src="https://cdn.pixabay.com/photo/2017/01/31/13/14/animal-2023924_1280.png" alt="Tigre roxo estilizado" />
+			<h1>hora x</h1>
+			<div class="subtitle">Seu painel de tempo e estilo</div>
+			<div class="clock" id="clock">00:00:00</div>
+			<div class="btns">
+				<a href="catalogo.html" class="btn">Catálogo</a>
+				<a href="https://www.instagram.com/tailan.avg/" class="btn" target="_blank">Criador</a>
+			</div>
+		</div>
 	<script>
 		function updateClock() {
 			const now = new Date();
