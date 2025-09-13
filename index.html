@@ -20,59 +20,76 @@
 					position: relative;
 					overflow: hidden;
 				}
-				.bg-anim {
-					position: fixed;
-					top: 0; left: 0; width: 100vw; height: 100vh;
-					z-index: 0;
-					pointer-events: none;
-					overflow: hidden;
-				}
-				.blob {
-					position: absolute;
-					border-radius: 50%;
-					filter: blur(60px);
-					opacity: 0.55;
-					animation: moveblob 16s ease-in-out infinite alternate;
-				}
-				.blob1 {
-					width: 520px; height: 520px;
-					background: linear-gradient(120deg,#a259f7 0%,#6d28d9 100%);
-					left: -120px; top: -120px;
-					animation-delay: 0s;
-				}
-				.blob2 {
-					width: 400px; height: 400px;
-					background: linear-gradient(120deg,#c084fc 0%,#a259f7 100%);
-					right: -100px; top: 40vh;
-					animation-delay: 4s;
-				}
-				.blob3 {
-					width: 340px; height: 340px;
-					background: linear-gradient(120deg,#6d28d9 0%,#a259f7 100%);
-					left: 60vw; bottom: -120px;
-					animation-delay: 8s;
-				}
-				@keyframes moveblob {
-					0% { transform: scale(1) translateY(0) translateX(0); }
-					50% { transform: scale(1.15) translateY(-40px) translateX(40px); }
-					100% { transform: scale(1.05) translateY(40px) translateX(-40px); }
-				}
-				.glass {
-					position: relative;
-					z-index: 1;
-					background: rgba(24, 24, 40, 0.72);
-					border-radius: 32px;
-					box-shadow: 0 8px 48px #a259f733, 0 1.5px 0 #fff1;
-					padding: 48px 36px 36px 36px;
-					margin: 0 auto;
-					backdrop-filter: blur(12px) saturate(1.2);
-					-webkit-backdrop-filter: blur(12px) saturate(1.2);
-					max-width: 420px;
-					width: 100%;
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-				}
+					.bg-anim {
+						position: fixed;
+						top: 0; left: 0; width: 100vw; height: 100vh;
+						z-index: 0;
+						pointer-events: none;
+						overflow: hidden;
+					}
+					.blob {
+						position: absolute;
+						border-radius: 50%;
+						filter: blur(80px);
+						opacity: 0.38;
+						animation: colorblob 16s ease-in-out infinite alternate;
+					}
+					.blob1 {
+						width: 520px; height: 520px;
+						background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+						left: -120px; top: -120px;
+						animation-delay: 0s;
+					}
+					.blob2 {
+						width: 400px; height: 400px;
+						background: linear-gradient(120deg,#a259f7 0%,#181828 100%);
+						right: -100px; top: 40vh;
+						animation-delay: 4s;
+					}
+					.blob3 {
+						width: 340px; height: 340px;
+						background: linear-gradient(120deg,#c084fc 0%,#181828 100%);
+						left: 60vw; bottom: -120px;
+						animation-delay: 8s;
+					}
+					@keyframes colorblob {
+						0% {
+							filter: blur(80px);
+							opacity: 0.38;
+							background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+						}
+						33% {
+							filter: blur(100px);
+							opacity: 0.44;
+							background: linear-gradient(120deg,#a259f7 0%,#181828 100%);
+						}
+						66% {
+							filter: blur(90px);
+							opacity: 0.38;
+							background: linear-gradient(120deg,#c084fc 0%,#181828 100%);
+						}
+						100% {
+							filter: blur(80px);
+							opacity: 0.38;
+							background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+						}
+					}
+					.glass {
+						position: relative;
+						z-index: 1;
+						background: rgba(18, 18, 28, 0.90);
+						border-radius: 32px;
+						box-shadow: 0 8px 48px #181828cc, 0 1.5px 0 #0002;
+						padding: 48px 36px 36px 36px;
+						margin: 0 auto;
+						backdrop-filter: blur(18px) saturate(1.1);
+						-webkit-backdrop-filter: blur(18px) saturate(1.1);
+						max-width: 420px;
+						width: 100%;
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+					}
 		.tigre {
 					width: 180px;
 					margin: 0 auto 32px auto;

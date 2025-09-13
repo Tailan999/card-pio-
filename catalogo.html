@@ -7,11 +7,82 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:900,400&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #0a0a0f;
-      color: #fff;
-      font-family: 'Roboto', Arial, sans-serif;
-      margin: 0;
       min-height: 100vh;
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      color: #e7e7f7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .bg-anim {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.38;
+      animation: colorblob 16s ease-in-out infinite alternate;
+    }
+    .blob1 {
+      width: 520px; height: 520px;
+      background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+      left: -120px; top: -120px;
+      animation-delay: 0s;
+    }
+    .blob2 {
+      width: 400px; height: 400px;
+      background: linear-gradient(120deg,#a259f7 0%,#181828 100%);
+      right: -100px; top: 40vh;
+      animation-delay: 4s;
+    }
+    .blob3 {
+      width: 340px; height: 340px;
+      background: linear-gradient(120deg,#c084fc 0%,#181828 100%);
+      left: 60vw; bottom: -120px;
+      animation-delay: 8s;
+    }
+    @keyframes colorblob {
+      0% {
+        filter: blur(80px);
+        opacity: 0.38;
+        background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+      }
+      33% {
+        filter: blur(100px);
+        opacity: 0.44;
+        background: linear-gradient(120deg,#a259f7 0%,#181828 100%);
+      }
+      66% {
+        filter: blur(90px);
+        opacity: 0.38;
+        background: linear-gradient(120deg,#c084fc 0%,#181828 100%);
+      }
+      100% {
+        filter: blur(80px);
+        opacity: 0.38;
+        background: linear-gradient(120deg,#6d28d9 0%,#181828 100%);
+      }
+    }
+    .glass {
+      position: relative;
+      z-index: 1;
+      background: rgba(18, 18, 28, 0.90);
+      border-radius: 32px;
+      box-shadow: 0 8px 48px #181828cc, 0 1.5px 0 #0002;
+      padding: 32px 18px 24px 18px;
+      margin: 32px auto 0 auto;
+      backdrop-filter: blur(18px) saturate(1.1);
+      -webkit-backdrop-filter: blur(18px) saturate(1.1);
+      max-width: 1200px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -94,8 +165,14 @@
   </style>
 </head>
 <body>
-  <h1>Catálogo de Relógios</h1>
-  <div class="catalogo">
+  <div class="bg-anim">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+  </div>
+  <div class="glass">
+    <h1>Catálogo de Relógios</h1>
+    <div class="catalogo">
     <div class="item">
       <img src="WhatsApp Image 2025-09-13 at 5.01.06 PM (3).jpeg" alt="Relógio 1" />
       <button class="btn-carrinho">Adicionar ao carrinho</button>
@@ -248,5 +325,8 @@ document.addEventListener('DOMContentLoaded', function() {
   };
 });
 </script>
+    </div>
+    <a href="index.html" class="voltar">&larr; Voltar para o início</a>
+  </div>
 </body>
 </html>
