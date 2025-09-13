@@ -201,6 +201,10 @@
     <div class="blob blob2"></div>
     <div class="blob blob3"></div>
   </div>
+  <!-- Modal de imagem -->
+  <div id="modalImg" style="display:none;position:fixed;z-index:200;top:0;left:0;width:100vw;height:100vh;background:rgba(10,10,18,0.92);align-items:center;justify-content:center;">
+    <img id="imgModalSrc" src="" alt="Relógio ampliado" style="max-width:90vw;max-height:80vh;border-radius:18px;box-shadow:0 4px 32px #000b;">
+  </div>
   <div class="glass">
     <h1>Catálogo de Relógios</h1>
     <div class="catalogo">
@@ -301,6 +305,22 @@
 </div>
 
 <script>
+// Modal de imagem ampliada
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.catalogo .item img').forEach(function(img) {
+    img.style.cursor = 'zoom-in';
+    img.onclick = function() {
+      document.getElementById('imgModalSrc').src = img.src;
+      document.getElementById('modalImg').style.display = 'flex';
+    };
+  });
+  document.getElementById('modalImg').onclick = function(e) {
+    if (e.target === this) {
+      this.style.display = 'none';
+      document.getElementById('imgModalSrc').src = '';
+    }
+  };
+});
 document.addEventListener('DOMContentLoaded', function() {
   // Lista de nomes dos relógios (na ordem das imagens)
   const nomesRelogios = [
