@@ -237,11 +237,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('btnFinalizar').onclick = function() {
     if (carrinho.length === 0) return alert('Seu carrinho está vazio!');
-    let texto = 'Olá! Gostaria de fazer um pedido:\n';
+    let texto = '*Olá! Gostaria de fazer um pedido de relógio(s):*%0A%0A';
     carrinho.forEach(function(item, i) {
-      texto += `- ${item.nome}\n`;
+      texto += `*${item.nome}*%0A`;
+      texto += `Imagem: ${window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '/') + item.img}%0A%0A`;
     });
-    const url = 'https://wa.me/5527997662164?text=' + encodeURIComponent(texto);
+    texto += 'Por favor, me envie as informações para finalizar a compra!';
+    const url = 'https://wa.me/5527997662164?text=' + texto;
     window.open(url, '_blank');
   };
 });
