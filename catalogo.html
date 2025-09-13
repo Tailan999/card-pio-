@@ -16,8 +16,15 @@
       align-items: center;
       position: relative;
       overflow-x: hidden;
-      overflow-y: auto;
+      /* Remover overflow-y: auto para não travar o scroll em desktop */
       -webkit-tap-highlight-color: transparent;
+    }
+    html {
+      height: 100%;
+    }
+    body, .glass {
+      min-height: 100vh;
+      height: auto;
     }
     .bg-anim {
       position: fixed;
